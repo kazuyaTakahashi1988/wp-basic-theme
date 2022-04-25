@@ -13,50 +13,50 @@ require_once './wp-login.php'; ?>
 
 
 <?php /*
-// define( 'LOGIN_CHANGE_PAGE', 'system-login.php' );
+  define( 'LOGIN_CHANGE_PAGE', 'system-login.php' );
 
-// add_action( 'login_init', 'login_change_init' );
-// add_filter( 'site_url', 'login_change_site_url', 10, 4 );
-// add_filter( 'wp_redirect', 'login_change_wp_redirect', 10, 2 );
-// // 指定以外のログインURLは403エラーにする
-// if ( ! function_exists( 'login_change_init' ) ) {
-//     function login_change_init() {
-//         if ( !defined( 'LOGIN_CHANGE' ) || sha1('WordPressLoginFormChange') !== LOGIN_CHANGE ) {
-//             status_header(403);
-//             exit;
-//         }
-//     }
-// }
-// // ログイン済みか新設のログインURLの場合はwp-login.phpを置き換える
-// if ( ! function_exists( 'login_change_site_url' ) ) {
-//     function login_change_site_url( $url, $path, $orig_scheme, $blog_id ) {
-//         if ( $path == 'wp-login.php' && ( is_user_logged_in() || strpos( $_SERVER['REQUEST_URI'], LOGIN_CHANGE_PAGE ) !== false ) )
-//             $url = str_replace( 'wp-login.php', LOGIN_CHANGE_PAGE, $url );
-//         return $url;
-//     }
-// }
-//
-// 管理画面ログアウトリンクのURL設定
-// function my_admin_script() {
-//   echo '<script>
-// window.addEventListener("load", function(){
-// var tr_logout = document.getElementById("wp-admin-bar-logout").children[0];
-// var getAttrs = tr_logout.getAttribute("href").replace("wp-login.php","system-login.php");
-// tr_logout.setAttribute("href",getAttrs);
+  add_action( 'login_init', 'login_change_init' );
+  add_filter( 'site_url', 'login_change_site_url', 10, 4 );
+  add_filter( 'wp_redirect', 'login_change_wp_redirect', 10, 2 );
+  // 指定以外のログインURLは403エラーにする
+  if ( ! function_exists( 'login_change_init' ) ) {
+      function login_change_init() {
+          if ( !defined( 'LOGIN_CHANGE' ) || sha1('WordPressLoginFormChange') !== LOGIN_CHANGE ) {
+              status_header(403);
+              exit;
+          }
+      }
+  }
+  // ログイン済みか新設のログインURLの場合はwp-login.phpを置き換える
+  if ( ! function_exists( 'login_change_site_url' ) ) {
+      function login_change_site_url( $url, $path, $orig_scheme, $blog_id ) {
+          if ( $path == 'wp-login.php' && ( is_user_logged_in() || strpos( $_SERVER['REQUEST_URI'], LOGIN_CHANGE_PAGE ) !== false ) )
+              $url = str_replace( 'wp-login.php', LOGIN_CHANGE_PAGE, $url );
+          return $url;
+      }
+  }
 
-// }, false);
-//   </script>'.PHP_EOL;
-// }
-// add_action('admin_print_scripts', 'my_admin_script');
-//
-// // ログアウト時のリダイレクト先の設定
-// if ( ! function_exists( 'login_change_wp_redirect' ) ) {
-//     function login_change_wp_redirect( $location, $status ) {
-//         if ( strpos( $_SERVER['REQUEST_URI'], LOGIN_CHANGE_PAGE ) !== false )
-//             $location = str_replace( 'wp-login.php', LOGIN_CHANGE_PAGE, $location );
-//         return $location;
-//     }
-// }
+  // 管理画面ログアウトリンクのURL設定
+  function my_admin_script() {
+    echo '<script>
+  window.addEventListener("load", function(){
+  var tr_logout = document.getElementById("wp-admin-bar-logout").children[0];
+  var getAttrs = tr_logout.getAttribute("href").replace("wp-login.php","system-login.php");
+  tr_logout.setAttribute("href",getAttrs);
+
+  }, false);
+    </script>'.PHP_EOL;
+  }
+  add_action('admin_print_scripts', 'my_admin_script');
+
+  // ログアウト時のリダイレクト先の設定
+  if ( ! function_exists( 'login_change_wp_redirect' ) ) {
+      function login_change_wp_redirect( $location, $status ) {
+          if ( strpos( $_SERVER['REQUEST_URI'], LOGIN_CHANGE_PAGE ) !== false )
+              $location = str_replace( 'wp-login.php', LOGIN_CHANGE_PAGE, $location );
+          return $location;
+      }
+  }
 
 */ ?>
 
