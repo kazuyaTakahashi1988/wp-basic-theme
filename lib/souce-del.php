@@ -24,21 +24,3 @@ function disable_emojis() {
     add_filter( 'tiny_mce_plugins', 'disable_emojis_tinymce' );
 }
 add_action( 'init', 'disable_emojis' );
-
-/*━━━━━━━━━━━━━━━
- リンク文字列 /category/ の削除
-━━━━━━━━━━━━━━━*/
-function remcat_function($link) {
-    return str_replace("/category/", "/", $link);
-    }
-    add_filter('user_trailingslashit', 'remcat_function');
-    function remcat_flush_rules() {
-    global $wp_rewrite;
-    $wp_rewrite->flush_rules();
-    }
-    add_action('init', 'remcat_flush_rules');
-    function remcat_rewrite($wp_rewrite) {
-    $new_rules = array('(.+)/page/(.+)/?' => 'index.php?category_name='.$wp_rewrite->preg_index(1).'&paged='.$wp_rewrite->preg_index(2));
-    $wp_rewrite->rules = $new_rules + $wp_rewrite->rules;
-    }
-    add_filter('generate_rewrite_rules', 'remcat_rewrite');

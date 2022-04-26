@@ -133,20 +133,6 @@ function custom_retrieve_password_title( $title, $user_login, $user_data ) {
 }
 add_filter( 'redirect_canonical', 'remove_redirect_guess_404_permalink' );
 
-function auto_post_slug( $slug, $post_ID, $post_status, $post_type ) {
-  // if ( preg_match( '/(%[0-9a-f]{2})+/', $slug ) ) {
-  if($post_type !== "service"){
-    if( $post_type == "tech" || "content" || "post" ){
-      $postini = substr(utf8_uri_encode( $post_type ), 0, 1) ;
-      if($postini == 'p'){ $postini = 'n'; }
-      $slug =  $postini. $post_ID;
-    }
-  }
-  // }
-  return $slug;
-}
-add_filter( 'wp_unique_post_slug', 'auto_post_slug', 10, 4  );
-
 function login_autocomplete_off() { 
   echo '<script>
   window.addEventListener("load", function(){
