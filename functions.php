@@ -17,7 +17,8 @@ require_once('lib/cache.php');               // キャッシュ
 /* ----------------------------------
     カスタム投稿宣言
 -------------------------------------*/
-// require_once('lib/add-custompost.php');      
+// require_once('lib/add-custompost.php'); 
+// require_once('lib/rewrite.php');      
 // コメントイン・アウトやファイル編集をしたらマメに管理画面「設定→パーマリンク→変更を保存」の更新をしてください。
 
 /* ----------------------------------
