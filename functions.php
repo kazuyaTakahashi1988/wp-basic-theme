@@ -7,12 +7,12 @@
 
 require_once('lib/const.php');               // 定数
 require_once('lib/souce-del.php');           // 不要なソース(絵文字・ver情報など)の削除
-require_once('lib/login.php');               // ログイン画面カスタマイズ
 require_once('lib/img.php');                 // 画像
 require_once('lib/post-custom.php');         // 投稿改変
 require_once('lib/func.php');                // 関数
 require_once('lib/shortcode.php');           // ショートコード
 require_once('lib/cache.php');               // キャッシュ
+// require_once('lib/login.php');            // ログイン画面カスタマイズ
 
 /* ----------------------------------
     カスタム投稿宣言
