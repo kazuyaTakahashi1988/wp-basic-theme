@@ -65,3 +65,86 @@ function custom_login() { ?>
 </style>
 <?php }
   add_action( 'login_enqueue_scripts', 'custom_login' );
+
+// 新規ユーザー登録時に送信されるメールの内容を変更
+function custom_new_user_notification_email( $wp_new_user_notification_email, $user, $blogname ) {
+  $key = get_password_reset_key( $user );
+  if ( is_wp_error( $key ) ) {
+  return;
+  }
+    $subject = '【' . $blogname . '】 新規ユーザー登録';
+    $message = 'パスワードを設定するには以下のアドレスへ移動してください。'. "\r\n\r\n";
+  $message .= network_site_url( "system-login.php?action=rp&key=$key&login=" . rawurlencode( $user->user_login ), 'login' ) . "\r\n\r\n";
+  
+  
+    $wp_new_user_notification_email['subject'] = $subject;
+    $wp_new_user_notification_email['message'] = $message;
+    return $wp_new_user_notification_email;
+  }
+  add_filter( 'wp_new_user_notification_email', 'custom_new_user_notification_email', 10, 3 );
+  
+// パスワードリセット時に「登録者」へ送信されるメールをカスタマイズ
+// 件名を設定
+function custom_retrieve_password_title( $title, $user_login, $user_data ) {
+  $title = 'パスワードリセットのお知らせ【サイト名】';
+  return $title;
+ }
+ add_filter( 'retrieve_password_title', 'custom_retrieve_password_title', 10, 3 );
+  
+ // メッセージを設定
+ function custom_retrieve_password_message( $message, $key, $user_login, $user_data ) {
+  
+  // サイト情報を取得
+  $blogname = stripslashes( get_option( 'blogname' ) );
+  
+  // メッセージを編集
+  $message = $user_login . ' 様' . "\r\n";
+  $message .= "\r\n";
+  $message .= 'あなたのアカウントに対して、パスワードのリセットが要求されました。' . "\r\n";
+  $message .= "\r\n";
+  $message .= 'もしこのリクエストが間違いだった場合は、このメールを無視してください。' . "\r\n";
+  $message .= '何も操作をしなければ、これまでのパスワードがそのまま使用できます。' . "\r\n";
+  $message .= "\r\n";
+  $message .= 'パスワードをリセットする場合は、次のリンクをクリックしてください。' . "\r\n";
+  $message .= 'パスワード変更画面にアクセスしますので、新しいパスワードを入力してください。' . "\r\n";
+  $message .= "\r\n";
+  $message .= network_site_url( "system-login.php?action=rp&key=$key&login=" . rawurlencode( $user_login ), 'login' ) . "\r\n";
+  $message .= "\r\n";
+  $message .= $blogname;
+  
+  // メッセージを表示
+  return $message;
+ }
+ add_filter( 'retrieve_password_message', 'custom_retrieve_password_message', 10, 4 );
+
+ function remove_redirect_guess_404_permalink( $redirect_url ) {
+  if ( is_404() )
+      return false;
+  return $redirect_url;
+}
+add_filter( 'redirect_canonical', 'remove_redirect_guess_404_permalink' );
+
+function login_autocomplete_off() { 
+  echo '<script>
+  window.addEventListener("load", function(){
+    var resetForm = document.getElementById("resetpassform");
+    var lostForm = document.getElementById("lostpasswordform");
+    var registerForm = document.getElementById("registerForm");
+
+    if(resetForm){
+      var setURL = resetForm.getAttribute("action").replace( "wp-login.php", "system-login.php" );
+      resetForm.setAttribute("action", setURL);
+    }
+    if(lostForm){
+      var setURL02 = lostForm.getAttribute("action").replace( "wp-login.php", "system-login.php" );
+      lostForm.setAttribute("action", setURL02);
+    }
+    if(registerForm){
+      var setURL03 = lostForm.getAttribute("action").replace( "wp-login.php", "system-login.php" );
+      registerForm.setAttribute("action", setURL03);
+    }
+  }, false);
+  </script>'.PHP_EOL;
+}
+add_action( 'login_enqueue_scripts', 'login_autocomplete_off' );
+
