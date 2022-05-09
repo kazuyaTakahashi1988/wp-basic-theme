@@ -1,4 +1,5 @@
-<?php /*
+<?php
+/*
 セキュリティ向上の為ログインURLを変更する
 WPのルート階層に以下のPHPファイルを作っておく
 
@@ -9,54 +10,51 @@ define('LOGIN_CHANGE', sha1('WordPressLoginFormChange'));
 require_once './wp-login.php'; ?>
 
 ↑↑↑ system-login.php ↑↑↑
-*/ ?>
 
+*/
 
-<?php
-  define( 'LOGIN_CHANGE_PAGE', 'system-login.php' );
+define( 'LOGIN_CHANGE_PAGE', 'system-login.php' );
 
-  add_action( 'login_init', 'login_change_init' );
-  add_filter( 'site_url', 'login_change_site_url', 10, 4 );
-  add_filter( 'wp_redirect', 'login_change_wp_redirect', 10, 2 );
-  // 指定以外のログインURLは403エラーにする
-  if ( ! function_exists( 'login_change_init' ) ) {
-      function login_change_init() {
-          if ( !defined( 'LOGIN_CHANGE' ) || sha1('WordPressLoginFormChange') !== LOGIN_CHANGE ) {
-              status_header(403);
-              exit;
-          }
-      }
-  }
-  // ログイン済みか新設のログインURLの場合はwp-login.phpを置き換える
-  if ( ! function_exists( 'login_change_site_url' ) ) {
-      function login_change_site_url( $url, $path, $orig_scheme, $blog_id ) {
-          if ( $path == 'wp-login.php' && ( is_user_logged_in() || strpos( $_SERVER['REQUEST_URI'], LOGIN_CHANGE_PAGE ) !== false ) )
-              $url = str_replace( 'wp-login.php', LOGIN_CHANGE_PAGE, $url );
-          return $url;
-      }
-  }
+add_action( 'login_init', 'login_change_init' );
+add_filter( 'site_url', 'login_change_site_url', 10, 4 );
+add_filter( 'wp_redirect', 'login_change_wp_redirect', 10, 2 );
+// 指定以外のログインURLは403エラーにする
+if ( ! function_exists( 'login_change_init' ) ) {
+    function login_change_init() {
+        if ( !defined( 'LOGIN_CHANGE' ) || sha1('WordPressLoginFormChange') !== LOGIN_CHANGE ) {
+            status_header(403);
+            exit;
+        }
+    }
+}
+// ログイン済みか新設のログインURLの場合はwp-login.phpを置き換える
+if ( ! function_exists( 'login_change_site_url' ) ) {
+    function login_change_site_url( $url, $path, $orig_scheme, $blog_id ) {
+        if ( $path == 'wp-login.php' && ( is_user_logged_in() || strpos( $_SERVER['REQUEST_URI'], LOGIN_CHANGE_PAGE ) !== false ) )
+            $url = str_replace( 'wp-login.php', LOGIN_CHANGE_PAGE, $url );
+        return $url;
+    }
+}
+// 管理画面ログアウトリンクのURL設定
+function my_admin_script() {
+  echo '<script>
+window.addEventListener("load", function(){
+var tr_logout = document.getElementById("wp-admin-bar-logout").children[0];
+var getAttrs = tr_logout.getAttribute("href").replace("wp-login.php","system-login.php");
+tr_logout.setAttribute("href",getAttrs);
 
-  // 管理画面ログアウトリンクのURL設定
-  function my_admin_script() {
-    echo '<script>
-  window.addEventListener("load", function(){
-  var tr_logout = document.getElementById("wp-admin-bar-logout").children[0];
-  var getAttrs = tr_logout.getAttribute("href").replace("wp-login.php","system-login.php");
-  tr_logout.setAttribute("href",getAttrs);
-
-  }, false);
-    </script>'.PHP_EOL;
-  }
-  add_action('admin_print_scripts', 'my_admin_script');
-
-  // ログアウト時のリダイレクト先の設定
-  if ( ! function_exists( 'login_change_wp_redirect' ) ) {
-      function login_change_wp_redirect( $location, $status ) {
-          if ( strpos( $_SERVER['REQUEST_URI'], LOGIN_CHANGE_PAGE ) !== false )
-              $location = str_replace( 'wp-login.php', LOGIN_CHANGE_PAGE, $location );
-          return $location;
-      }
-  }
+}, false);
+  </script>'.PHP_EOL;
+}
+add_action('admin_print_scripts', 'my_admin_script');
+// ログアウト時のリダイレクト先の設定
+if ( ! function_exists( 'login_change_wp_redirect' ) ) {
+    function login_change_wp_redirect( $location, $status ) {
+        if ( strpos( $_SERVER['REQUEST_URI'], LOGIN_CHANGE_PAGE ) !== false )
+            $location = str_replace( 'wp-login.php', LOGIN_CHANGE_PAGE, $location );
+        return $location;
+    }
+}
 
 function custom_login() { ?>
 <style>
@@ -67,86 +65,3 @@ function custom_login() { ?>
 </style>
 <?php }
   add_action( 'login_enqueue_scripts', 'custom_login' );
-
-// 新規ユーザー登録時に送信されるメールの内容を変更
-function custom_new_user_notification_email( $wp_new_user_notification_email, $user, $blogname ) {
-  $key = get_password_reset_key( $user );
-  if ( is_wp_error( $key ) ) {
-  return;
-  }
-    $subject = '【' . $blogname . '】 新規ユーザー登録';
-    $message = 'パスワードを設定するには以下のアドレスへ移動してください。'. "\r\n\r\n";
-  $message .= network_site_url( "system-login.php?action=rp&key=$key&login=" . rawurlencode( $user->user_login ), 'login' ) . "\r\n\r\n";
-  
-  
-    $wp_new_user_notification_email['subject'] = $subject;
-    $wp_new_user_notification_email['message'] = $message;
-    return $wp_new_user_notification_email;
-  }
-  add_filter( 'wp_new_user_notification_email', 'custom_new_user_notification_email', 10, 3 );
-  
-// パスワードリセット時に「登録者」へ送信されるメールをカスタマイズ
-// 件名を設定
-function custom_retrieve_password_title( $title, $user_login, $user_data ) {
-  $title = 'パスワードリセットのお知らせ【サイト名】';
-  return $title;
- }
- add_filter( 'retrieve_password_title', 'custom_retrieve_password_title', 10, 3 );
-  
- // メッセージを設定
- function custom_retrieve_password_message( $message, $key, $user_login, $user_data ) {
-  
-  // サイト情報を取得
-  $blogname = stripslashes( get_option( 'blogname' ) );
-  
-  // メッセージを編集
-  $message = $user_login . ' 様' . "\r\n";
-  $message .= "\r\n";
-  $message .= 'あなたのアカウントに対して、パスワードのリセットが要求されました。' . "\r\n";
-  $message .= "\r\n";
-  $message .= 'もしこのリクエストが間違いだった場合は、このメールを無視してください。' . "\r\n";
-  $message .= '何も操作をしなければ、これまでのパスワードがそのまま使用できます。' . "\r\n";
-  $message .= "\r\n";
-  $message .= 'パスワードをリセットする場合は、次のリンクをクリックしてください。' . "\r\n";
-  $message .= 'パスワード変更画面にアクセスしますので、新しいパスワードを入力してください。' . "\r\n";
-  $message .= "\r\n";
-  $message .= network_site_url( "system-login.php?action=rp&key=$key&login=" . rawurlencode( $user_login ), 'login' ) . "\r\n";
-  $message .= "\r\n";
-  $message .= $blogname;
-  
-  // メッセージを表示
-  return $message;
- }
- add_filter( 'retrieve_password_message', 'custom_retrieve_password_message', 10, 4 );
-
- function remove_redirect_guess_404_permalink( $redirect_url ) {
-  if ( is_404() )
-      return false;
-  return $redirect_url;
-}
-add_filter( 'redirect_canonical', 'remove_redirect_guess_404_permalink' );
-
-function login_autocomplete_off() { 
-  echo '<script>
-  window.addEventListener("load", function(){
-    var resetForm = document.getElementById("resetpassform");
-    var lostForm = document.getElementById("lostpasswordform");
-    var registerForm = document.getElementById("registerForm");
-
-    if(resetForm){
-      var setURL = resetForm.getAttribute("action").replace( "wp-login.php", "system-login.php" );
-      resetForm.setAttribute("action", setURL);
-    }
-    if(lostForm){
-      var setURL02 = lostForm.getAttribute("action").replace( "wp-login.php", "system-login.php" );
-      lostForm.setAttribute("action", setURL02);
-    }
-    if(registerForm){
-      var setURL03 = lostForm.getAttribute("action").replace( "wp-login.php", "system-login.php" );
-      registerForm.setAttribute("action", setURL03);
-    }
-  }, false);
-  </script>'.PHP_EOL;
-}
-add_action( 'login_enqueue_scripts', 'login_autocomplete_off' );
-
