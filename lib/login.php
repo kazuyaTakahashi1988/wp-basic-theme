@@ -65,7 +65,6 @@ function custom_login() { ?>
 </style>
 <?php }
   add_action( 'login_enqueue_scripts', 'custom_login' );
-
 // 新規ユーザー登録時に送信されるメールの内容を変更
 function custom_new_user_notification_email( $wp_new_user_notification_email, $user, $blogname ) {
   $key = get_password_reset_key( $user );
@@ -147,4 +146,3 @@ function login_autocomplete_off() {
   </script>'.PHP_EOL;
 }
 add_action( 'login_enqueue_scripts', 'login_autocomplete_off' );
-
