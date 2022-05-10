@@ -12,7 +12,15 @@ require_once('lib/post-custom.php');         // 投稿改変
 require_once('lib/func.php');                // 関数
 require_once('lib/shortcode.php');           // ショートコード
 require_once('lib/cache.php');               // キャッシュ
-// require_once('lib/login.php');            // ログイン画面カスタマイズ
+
+
+/* ----------------------------------
+    ログイン画面カスタマイズ
+-------------------------------------*/
+// require_once('lib/login.php');       
+// 事前に管理画面からログアウトして、こちらをコメントインしてください。
+// 管理画面にログインしている状態でコメントインしても正常に機能しません
+
 
 /* ----------------------------------
     カスタム投稿宣言
